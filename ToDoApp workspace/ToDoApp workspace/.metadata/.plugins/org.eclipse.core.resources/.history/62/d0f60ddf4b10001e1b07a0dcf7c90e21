@@ -1,0 +1,180 @@
+package controllers;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import task.Task;
+import task.TaskService;
+
+/*
+	Contains the methods that are called in the TasksScreen.fxml
+*/
+
+public class TasksScreenController {
+	
+	@FXML
+	private AnchorPane tasksScreenAnchorPane;
+	
+	@FXML
+	Node backButtonTasksScreen;
+	
+	@FXML
+	Node tasksScreenTitle;
+	
+	@FXML
+	Node tasksScreenTitle2;
+	
+	@FXML
+	Node taskEditorScreenOpenerButtonToAddNewTask;
+	
+	@FXML
+	List<Node> elementsThatWontBeDestroyedWhenSceneIsReloaded = new ArrayList<Node>();
+	
+	@FXML
+	Node taskEditorScreenOpenerToAddNewTaskHBox;
+	
+	int taskBoxInitialLayoutY = 150;
+	int taskBoxPaddingY = 50;
+	
+	int taskBoxWidth = 250;
+	int taskBoxHeight = 250;
+	
+	int taskNameOffsetX = 20;
+	int taskNameOffsetY = 50;
+	
+	int descriptionTitleLayoutX = 20;
+	int descriptionTitleLayoutY = 130;
+	
+	int descriptionOffsetX = 20;
+	int descriptionOffsetY = 160;
+	
+	int deadlineTitleLayoutX = 20;
+	int deadlineTitleLayoutY = 190;
+	
+	int deadlineOffsetX = 20;
+	int deadlineOffsetY = 220;
+	
+	int taskModifierButtonWidth = 100;
+	int taskModifierButtonHeight = 30;
+	
+	int taskModifierButtonLayoutY = 250;
+	
+	public void backFromTasksScreen(ActionEvent actionEvent) { // Called when the backButton is pressed in the TasksScreen
+		new SceneLoader().openScene((Node) actionEvent.getSource(), "LoginScreen");
+    }
+	
+	public void generateTasksList(ActionEvent actionEvent) { // Called from LoginScreenController
+        new SceneLoader().openScene((Node)actionEvent.getSource(), "TasksScreen");   
+        
+    }
+	
+	@FXML
+	public void initialize() { // Called when the TasksScreen is loaded
+		generateTasksList();
+            
+	}
+	
+	void generateTasksList() {
+		elementsThatWontBeDestroyedWhenSceneIsReloaded.add(backButtonTasksScreen);
+		elementsThatWontBeDestroyedWhenSceneIsReloaded.add(tasksScreenTitle);
+		tasksScreenAnchorPane.getChildren().removeIf(node -> !elementsThatWontBeDestroyedWhenSceneIsReloaded.contains(node)); // If the delete button is pressed, all the tasks that were created previously are removed
+		List<Task> tasks = new TaskService().getAllTasks();
+		tasks.sort(Comparator.comparing(Task::getName)); // Sorts the tasks by their name
+		taskBoxInitialLayoutY = 150; // in case of a scene reload
+		
+		Button taskEditorOpenerButtonToAddNewTask = new Button("+"); // This button is not visible if it's created directly in the fxml file, so it must be created here programatically
+		taskEditorOpenerButtonToAddNewTask.setOnAction(actionEvent -> {
+			openTaskEditorScreenToAddNewTask(actionEvent);
+        });
+		taskEditorOpenerButtonToAddNewTask.setLayoutX(685);
+		taskEditorOpenerButtonToAddNewTask.setLayoutY(50);
+		taskEditorOpenerButtonToAddNewTask.setPrefWidth(75);
+		taskEditorOpenerButtonToAddNewTask.setPrefHeight(75);
+        taskEditorOpenerButtonToAddNewTask.setFont(new Font(30));
+        tasksScreenAnchorPane.getChildren().add(taskEditorOpenerButtonToAddNewTask);
+		
+        for(int i=0;i<tasks.size();i++){
+        	Task task = tasks.get(i);
+        	int taskBoxInitialLayoutX = (SceneLoader.screenWidth-2*taskBoxWidth)/3;
+        	int taskBoxLayoutX = i%2 == 0 ? taskBoxInitialLayoutX : SceneLoader.screenWidth-taskBoxInitialLayoutX-taskBoxWidth;
+            HBox taskBox = new HBox();
+            System.out.println("The wrong color: " + task.color);
+            taskBox.setStyle("-fx-background-color: " + "#" + task.color + "; -fx-background-radius: 15;");
+            taskBox.setPrefWidth(taskBoxWidth);
+            taskBox.setPrefHeight(taskBoxHeight);
+            taskBox.setLayoutX(taskBoxLayoutX);
+            
+            taskBox.setLayoutY( taskBoxInitialLayoutY + taskBoxPaddingY);
+            tasksScreenAnchorPane.getChildren().add(taskBox);
+            
+            Label taskName = new Label(tasks.get(i).name);
+            taskName.setStyle("-fx-font-size: 60; -fx-font-weight: bold; ");
+            taskName.setLayoutX( i%2 == 0 ? taskBoxInitialLayoutX + taskNameOffsetX : SceneLoader.screenWidth-taskBoxInitialLayoutX-taskBoxWidth+taskNameOffsetX );
+            taskName.setLayoutY(taskBoxInitialLayoutY + taskNameOffsetY);
+            tasksScreenAnchorPane.getChildren().add(taskName);
+
+            Label descriptionTitle = new Label("Description");
+            descriptionTitle.setStyle("-fx-font-size: 20; -fx-font-weight: bold; ");
+            descriptionTitle.setLayoutX( i%2 == 0 ? taskBoxInitialLayoutX + descriptionTitleLayoutX : SceneLoader.screenWidth-taskBoxInitialLayoutX-taskBoxWidth + descriptionTitleLayoutX );
+            descriptionTitle.setLayoutY(taskBoxInitialLayoutY + descriptionTitleLayoutY);
+            tasksScreenAnchorPane.getChildren().add(descriptionTitle);
+            
+            Label description = new Label(task.description);
+            description.setLayoutX( i%2 == 0 ? taskBoxInitialLayoutX + descriptionOffsetX : SceneLoader.screenWidth-taskBoxInitialLayoutX-taskBoxWidth + descriptionOffsetX );
+            description.setLayoutY(taskBoxInitialLayoutY + descriptionOffsetY);
+            tasksScreenAnchorPane.getChildren().add(description);
+            
+            Label deadlineTitle = new Label("Deadline");
+            deadlineTitle.setStyle("-fx-font-size: 20; -fx-font-weight: bold; ");
+            deadlineTitle.setLayoutX( i%2 == 0 ? taskBoxInitialLayoutX + deadlineTitleLayoutX : SceneLoader.screenWidth-taskBoxInitialLayoutX-taskBoxWidth + deadlineTitleLayoutX );
+            deadlineTitle.setLayoutY(taskBoxInitialLayoutY + deadlineTitleLayoutY);
+            tasksScreenAnchorPane.getChildren().add(deadlineTitle);
+
+            Label deadline = new Label(task.deadline.toString());
+            deadline.setLayoutX( i%2 == 0 ? taskBoxInitialLayoutX + deadlineOffsetX : SceneLoader.screenWidth-taskBoxInitialLayoutX-taskBoxWidth+deadlineOffsetX );
+            deadline.setLayoutY(taskBoxInitialLayoutY + deadlineOffsetY);
+            tasksScreenAnchorPane.getChildren().add(deadline);
+
+            Button editButton = new Button("Edit");
+            editButton.setOnAction(actionEvent -> {
+            	TaskEditorScreenController.currentTask = task;
+        		new SceneLoader().openScene((Node) actionEvent.getSource(), "TaskEditorScreen");
+            });
+            editButton.setLayoutX(taskBoxLayoutX + (float)(taskBoxWidth-2*taskModifierButtonWidth)/3 );
+            editButton.setLayoutY(taskBoxInitialLayoutY + taskModifierButtonLayoutY);
+            editButton.setPrefWidth(taskModifierButtonWidth);
+            editButton.setPrefHeight(taskModifierButtonHeight);
+            tasksScreenAnchorPane.getChildren().add(editButton);
+            
+            Button deleteButton = new Button("Delete");
+            deleteButton.setOnAction(event -> {
+                new TaskService().deleteTask(task);
+                generateTasksList();
+            });
+            deleteButton.setLayoutX( taskBoxLayoutX + taskModifierButtonWidth + (float)(taskBoxWidth-2*taskModifierButtonWidth)/3*2 );
+            deleteButton.setLayoutY(taskBoxInitialLayoutY + taskModifierButtonLayoutY);
+            deleteButton.setPrefWidth(taskModifierButtonWidth);
+            deleteButton.setPrefHeight(taskModifierButtonHeight);
+            tasksScreenAnchorPane.getChildren().add(deleteButton);
+            
+            if(i % 2 == 1) {
+            	taskBoxInitialLayoutY += taskBoxHeight + taskBoxPaddingY;
+
+            }
+        }
+	}
+	
+	public void openTaskEditorScreenToAddNewTask(ActionEvent actionEvent){
+		TaskEditorScreenController.currentTask = null;
+		new SceneLoader().openScene((Node) actionEvent.getSource(), "TaskEditorScreen");
+	}
+}

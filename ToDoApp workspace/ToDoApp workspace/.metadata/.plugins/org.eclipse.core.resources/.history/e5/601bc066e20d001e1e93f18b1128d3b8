@@ -1,0 +1,15 @@
+package task2;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Rectangle rectangle = new Rectangle(5, 8, "blue", true);
+		Circle circle = new Circle(4, "pink", true);
+		Square square = new Square(6);
+		System.out.println(rectangle.toString());
+		System.out.println(square.toString());
+		System.out.println(circle.toString());
+
+	}
+
+}

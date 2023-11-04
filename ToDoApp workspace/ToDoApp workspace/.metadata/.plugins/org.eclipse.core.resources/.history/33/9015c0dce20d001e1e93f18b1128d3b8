@@ -1,0 +1,17 @@
+package composition_task_1; //COMPOSITION AND AGGREGATION TASK 1
+
+public class Main {
+
+	public static void main(String[] args) {
+		Author a1 = new Author("Claudiu Furtea", "claudiufurtea@gmail.com", 'm');
+		Author a2 = new Author("Paula Negrea", "paulabeatrice17@gmail.com", 'f');
+		Page p1 = new Page(230, 500, "Last chapter!");
+		Page p2 = new Page(10, 420, "First chapter!");
+		Book b1 = new Book("Scufita Rosie", a1, 99.99, p1);
+		Book b2 = new Book("Alba ca Zapada", a2, 109.99, 2, p2);
+		System.out.println(b1.toString());
+		System.out.println(b2.toString());
+
+	}
+
+}

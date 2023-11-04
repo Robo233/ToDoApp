@@ -1,0 +1,57 @@
+package task2;
+
+public class Rectangle extends Shape {
+	protected double width = 1.0;
+	protected double length = 1.0;
+
+	public Rectangle() {
+
+	}
+
+	public Rectangle(double width, double length) {
+		this.length = length;
+		this.width = width;
+	}
+
+	public Rectangle(double width, double length, String color, boolean filled) {
+		this.length = length;
+		this.width = width;
+		this.color = color;
+		this.filled = filled;
+
+	}
+
+	public double getLength() {
+		return length;
+	}
+
+	public void setLength(double length) {
+		this.length = length;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
+	public String toString() {
+		return "Rectangle[width=" + width + ", length=" + length + ", color=" + color + ", filled=" + filled + ", area="
+				+ getArea() + ", perimeter" + getPerimeter() + "]";
+	}
+
+	@Override
+	double getPerimeter() {
+		return 2 * length + 2 * width;
+	}
+
+	@Override
+	double getArea() {
+		return length * width;
+	}
+
+}// return " color=" + color + ", filled=" + filled + ", area=" + this.getArea()
+	// + ", perimeter"
+//+ this.getPerimeter();
